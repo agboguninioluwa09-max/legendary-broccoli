@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OMIA Events</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #000000;
+    --paper: #ffffff;
+    --card: rgba(238, 238, 238, 0.9);
+    --card-text: #111111;
+    --muted: #444444;
+    --focus: #1a73e8;
+    --wa: #25d366;
+    --display: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+    --script: "Dancing Script", "Segoe Script", "Brush Script MT", cursive;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --venue-photo: url("Gemini_Generated_Image_wuhmtdwuhmtdwuhm.jpeg")
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-padding-top: var(--safe-top); }
+  body {
+    margin: 0;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 16px;
+    line-height: 1.55;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  img, svg { max-width: 100%; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  /* Venue photo, fixed behind the whole page */
+  .bg {
+    position: fixed; inset: 0; z-index: -1;
+    background-color: #55638a;
+    background-image: linear-gradient(rgba(14, 18, 32, .3), rgba(14, 18, 32, .3)), var(--venue-photo);
+    background-size: cover;
+    background-position: center;
+  }
+
+  /* ---------- Header ---------- */
+  .masthead {
+    background: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px; padding: 18px 20px 14px; flex-wrap: wrap; text-decoration: none;
+  }
+  .masthead img.logo-img { width: 72px; height: 72px; flex: none; border-radius: 50%; object-fit: cover; }
+  .brand-name { font-weight: 800; font-size: clamp(2rem, 6vw, 3.2rem); letter-spacing: .02em; line-height: 1; margin: 0; }
+  .brand-tag { font-family: var(--script); font-size: clamp(1.1rem, 2.6vw, 1.5rem); margin: 4px 0 0; text-align: right; color: #f0f0f0; }
+
+  nav.primary { background: var(--paper); color: var(--ink); position: sticky; top: var(--safe-top); z-index: 5; }
+  nav.primary ul {
+    list-style: none; margin: 0 auto; padding: 0 12px;
+    display: flex; justify-content: safe center; gap: clamp(14px, 4vw, 52px);
+    overflow-x: auto; max-width: 1200px;
+  }
+  nav.primary a { display: block; padding: 11px 2px; font-size: .86rem; font-weight: 500; text-decoration: none; white-space: nowrap; }
+  nav.primary a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  nav.primary a[aria-current="page"] { text-decoration: underline; text-underline-offset: 5px; font-weight: 700; }
+
+  /* ---------- Stage ---------- */
+  main { flex: 1; display: flex; }
+  .stage {
+    flex: 1; padding: clamp(24px, 6vw, 64px) clamp(14px, 4vw, 48px) clamp(40px, 8vw, 80px);
+    display: flex; align-items: flex-start; justify-content: center;
+    background: transparent;
+  }
+  .stage.is-dark { background: var(--ink); }
+
+  section.page { display: none; width: 100%; max-width: 1040px; }
+  section.page.is-active { display: block; }
+  section.page h1:focus { outline: none; }
+
+  .card {
+    background: var(--card); color: var(--card-text);
+    border-radius: 14px; padding: clamp(20px, 4vw, 40px);
+  }
+  .card h1 { font-size: clamp(1.5rem, 3.4vw, 2.2rem); margin: 0 0 14px; font-weight: 600; line-height: 1.15; }
+  .card p { margin: 0 0 14px; }
+  .card + .card { margin-top: 20px; }
+
+  .btn {
+    display: inline-block; background: var(--ink); color: var(--paper);
+    border: 0; border-radius: 6px; padding: 10px 20px; font: 500 .9rem var(--display);
+    text-decoration: none; cursor: pointer;
+  }
+  .btn:hover { background: #2b2b2b; }
+  .btn.light { background: var(--paper); color: var(--ink); }
+  .btn.light:hover { background: #e4e4e4; }
+  .btn.wa { background: var(--wa); color: #06260f; font-weight: 700; }
+  .btn.wa:hover { background: #3ee07a; }
+  .btn.ghost { background: transparent; color: inherit; box-shadow: inset 0 0 0 1.5px currentColor; }
+  .btn.ghost:hover { background: rgba(255,255,255,.12); }
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+  /* ---------- Home ---------- */
+  .hero-card { max-width: 660px; margin: clamp(10px, 4vw, 36px) auto 0; }
+  .hero-card h1 { font-weight: 300; font-size: clamp(2rem, 5vw, 3rem); }
+  .hero-card p.lede { font-size: 1.15rem; margin-bottom: 18px; }
+
+  .how h2 { margin: 0 0 16px; font-size: 1.3rem; font-weight: 700; }
+  .how ol { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+  .how li { counter-increment: step; background: rgba(255,255,255,.7); border-radius: 10px; padding: 16px 16px 16px 58px; position: relative; }
+  .how li::before {
+    content: counter(step); position: absolute; left: 14px; top: 14px;
+    width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: #fff;
+    display: grid; place-items: center; font-weight: 700; font-size: .9rem;
+  }
+  .how li strong { display: block; margin-bottom: 2px; }
+  .how li span { font-size: .9rem; color: var(--muted); }
+
+  /* ---------- About ---------- */
+  .about-card h1 { font-weight: 800; letter-spacing: .01em; }
+  .about-card .sub { font-weight: 600; margin-bottom: 18px; }
+  .about-card p { max-width: 74ch; }
+  .values { list-style: none; padding: 0; margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+  .values li { background: var(--ink); color: #fff; padding: 7px 18px; font-size: .88rem; font-weight: 600; transform: skewX(-14deg); }
+  .values li span { display: block; transform: skewX(14deg); }
+
+  /* ---------- Services ---------- */
+  .services-card h1 { font-weight: 800; }
+  .tags { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 22px; }
+  .tag {
+    display: block; background: var(--ink); color: var(--paper);
+    padding: 11px 26px; font-size: .9rem; font-weight: 500; text-decoration: none; text-align: center;
+    transform: skewX(-14deg); min-width: 170px; transition: background .15s ease;
+  }
+  .tag > span { display: block; transform: skewX(14deg); }
+  .tag:hover { background: #3a3a3a; }
+  .services-note { margin-top: 26px; text-align: center; font-size: .95rem; }
+
+  /* ---------- Blogs ---------- */
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 4px; }
+  .filters button {
+    border: 1.5px solid var(--ink); background: transparent; color: var(--ink);
+    padding: 6px 14px; border-radius: 99px; font: 600 .82rem var(--display); cursor: pointer;
+  }
+  .filters button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .blog-list { display: grid; gap: 14px; margin-top: 18px; }
+  .post { background: rgba(255,255,255,.75); border-radius: 10px; overflow: hidden; }
+  .post summary { list-style: none; cursor: pointer; padding: 18px 20px; display: block; }
+  .post summary::-webkit-details-marker { display: none; }
+  .post .meta { font-size: .78rem; font-weight: 600; color: var(--muted); margin: 0 0 4px; }
+  .post summary h2 { margin: 0 0 4px; font-size: 1.1rem; font-weight: 700; }
+  .post summary p { margin: 0; color: var(--muted); font-size: .95rem; }
+  .post summary .more { display: inline-block; margin-top: 8px; font-size: .85rem; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+  .post[open] summary .more::before { content: "Show less"; }
+  .post:not([open]) summary .more::before { content: "Read post"; }
+  .post .body { padding: 0 20px 20px; max-width: 70ch; }
+  .post .body p { margin-bottom: 10px; }
+  .post .body ul { margin: 0 0 12px; padding-left: 20px; }
+  .post .body li { margin-bottom: 4px; }
+  .post .body .cta { margin-top: 14px; }
+
+  /* ---------- Vendors ---------- */
+  .vendor-grid { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .vendor-grid li { background: var(--ink); color: var(--paper); border-radius: 10px; padding: 18px; }
+  .vendor-grid h2 { font-size: 1rem; margin: 0 0 6px; }
+  .vendor-grid p { margin: 0; font-size: .88rem; color: #d6d6d6; }
+  .vendor-cta { margin-top: 24px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .vendor-cta p { margin: 0; }
+
+  /* ---------- Dark pages ---------- */
+  .dark-panel { background: var(--ink); color: var(--paper); padding: clamp(8px, 2vw, 16px) 0; max-width: 900px; margin: 0 auto; }
+  .dark-panel h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; margin: 0 0 6px; line-height: 1.1; display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  .dark-panel h1 .script { font-family: var(--script); font-weight: 700; font-size: .6em; }
+  .dark-panel h2 { font-size: 1.25rem; margin: 34px 0 12px; }
+  .dark-panel .hint { color: #d0d0d0; font-size: .92rem; margin: 0 0 20px; }
+
+  .steps { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: 0 0 22px; font-size: .82rem; }
+  .steps li { padding: 6px 14px; border: 1px solid #555; border-radius: 99px; color: #b9b9b9; }
+  .steps li[aria-current="step"] { background: var(--paper); color: var(--ink); border-color: var(--paper); font-weight: 700; }
+
+  .fields { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px 18px; }
+  .field { display: flex; flex-direction: column; gap: 5px; grid-column: span 3; min-width: 0; }
+  .field.third { grid-column: span 2; }
+  .field.full { grid-column: span 6; }
+  .field label { font-size: .8rem; font-weight: 700; }
+  .field input, .field select, .field textarea {
+    border: 0; border-radius: 8px; padding: 11px 12px; font: 400 .95rem var(--display);
+    background: var(--paper); color: var(--ink); width: 100%;
+  }
+  .field textarea { min-height: 120px; resize: vertical; }
+  @media (max-width: 720px) { .field, .field.third { grid-column: span 6; } }
+
+  .checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 26px 24px; }
+  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+  legend { font-weight: 800; font-size: 1.15rem; margin-bottom: 8px; padding: 0; }
+  .check { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; font-weight: 600; font-size: .93rem; cursor: pointer; line-height: 1.35; }
+  .check input { width: 20px; height: 20px; accent-color: #fff; flex: none; margin: 0; }
+
+  .inline { display: flex; gap: 10px; }
+  .inline input { flex: 1; }
+  .chips { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips li { background: #fff; color: #000; border-radius: 99px; padding: 5px 6px 5px 14px; font-size: .88rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .chips button { border: 0; background: #000; color: #fff; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: .9rem; line-height: 1; }
+
+  .actions { display: flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
+  .error { color: #ffb4b4; font-size: .9rem; margin-top: 12px; min-height: 1.2em; }
+  .status { color: #9be7b0; font-size: .9rem; min-height: 1.2em; margin-top: 10px; }
+
+  .summary { background: #151515; border-radius: 10px; padding: 18px 20px; margin: 18px 0; }
+  .summary dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; }
+  .summary dt { font-weight: 700; font-size: .85rem; color: #cfcfcf; }
+  .summary dd { margin: 0; font-size: .95rem; overflow-wrap: anywhere; }
+  @media (max-width: 520px) { .summary dl { grid-template-columns: 1fr; gap: 0; } .summary dd { margin-bottom: 10px; } }
+  .send-note { font-size: .88rem; color: #d0d0d0; margin: 0 0 14px; }
+
+  /* Contact */
+  .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 0 0 8px; }
+  .contact-grid div { background: #151515; border-radius: 10px; padding: 16px 18px; }
+  .contact-grid h2 { font-size: .85rem; color: #cfcfcf; margin: 0 0 6px; font-weight: 700; }
+  .contact-grid p { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+  .contact-grid a { text-decoration: none; }
+  .contact-grid a:hover { text-decoration: underline; }
+  .contact-grid .sub { display: block; font-size: .8rem; font-weight: 400; color: #cfcfcf; margin-top: 4px; }
+
+  .faq details { border-bottom: 1px solid #333; }
+  .faq summary { cursor: pointer; padding: 14px 0; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; font-size: 1.3rem; line-height: 1; }
+  .faq details[open] summary::after { content: "\2212"; }
+  .faq p { margin: 0 0 14px; color: #d6d6d6; font-size: .95rem; max-width: 70ch; }
+
+  /* ---------- Footer + WhatsApp button ---------- */
+  footer { background: var(--ink); text-align: center; padding: 22px 16px 26px; font-size: .85rem; color: #cfcfcf; }
+  footer .script { font-family: var(--script); font-size: 1.3rem; color: #fff; }
+  footer .foot-contact { margin: 8px 0; display: flex; flex-wrap: wrap; gap: 6px 20px; justify-content: center; }
+  footer a { color: #fff; }
+
+  .wa-float {
+    position: fixed; right: 16px; bottom: calc(16px + var(--safe-bottom)); z-index: 20;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--wa); color: #06260f; text-decoration: none; font-weight: 700; font-size: .88rem;
+    padding: 11px 16px 11px 12px; border-radius: 99px; box-shadow: 0 4px 14px rgba(0,0,0,.35);
+  }
+  .wa-float svg { width: 24px; height: 24px; flex: none; }
+  @media (max-width: 520px) { .wa-float span { display: none; } .wa-float { padding: 12px; } }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+
+<a class="masthead" href="#home" aria-label="OMIA Events home">
+  <img src="Gemini_Generated_Image_uy7uwzuy7uwzuy7u.jpeg" alt="OMIA Events Logo" class="logo-img">
+  <div>
+    <p class="brand-name">OMIA Events</p>
+    <p class="brand-tag">You dream it, we theme it</p>
+  </div>
+</a>
+
+<nav class="primary" aria-label="Main">
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About Us</a></li>
+    <li><a href="#services">Our Services</a></li>
+    <li><a href="#blogs">Our Blogs</a></li>
+    <li><a href="#vendors">Our Vendors</a></li>
+    <li><a href="#contact">Contact Us</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="stage" id="stage">
+
+    <!-- HOME -->
+    <section class="page" id="page-home" data-title="Home">
+      <div class="card hero-card">
+        <h1 tabindex="-1">Turning Ideas Into Experiences</h1>
+        <p class="lede">Transform your ideas into captivating events. Let's get started:</p>
+        <div class="btn-row">
+          <a class="btn" href="#plan">Plan My Event</a>
+          <a class="btn ghost" href="#services">See our services</a>
+        </div>
+      </div>
+      <div class="card how">
+        <h2>How planning with us works</h2>
+        <ol>
+          <li><strong>Tell us your plan</strong><span>Fill in the event form with your date, guests and budget.</span></li>
+          <li><strong>Choose your services</strong><span>Pick food, drinks and vendors, then add any extras.</span></li>
+          <li><strong>Send it to us</strong><span>Your request goes straight to our WhatsApp or Gmail.</span></li>
+          <li><strong>We take it from there</strong><span>We reply with next steps so you can enjoy the day.</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="page" id="page-about" data-title="About Us">
+      <div class="card about-card">
+        <h1 tabindex="-1">ABOUT US:</h1>
+        <p class="sub">Driven by Detail, Inspired by Impact;</p>
+        <p>OMIA Events is a premier event planning and public relations company dedicated to creating exceptional experiences that stand apart. In a fast-paced and ever-evolving industry, we pride ourselves on our ability to transform ordinary moments into extraordinary events.</p>
+        <p>Our approach is rooted in creativity, precision, and a deep understanding of our clients' visions. We are committed to exceeding expectations through personalized service, bold ideas, and flawless execution.</p>
+        <p>At the core of OMIA Events are values we hold unwaveringly—honesty, integrity, credibility, and trust. These guide every interaction and every experience we craft. From our clients to sponsors and every guest in attendance, we ensure each event reflects the excellence and authenticity that define who we are.</p>
+        <ul class="values" aria-label="Our values">
+          <li><span>Honesty</span></li><li><span>Integrity</span></li><li><span>Credibility</span></li><li><span>Trust</span></li>
+        </ul>
+        <a class="btn" href="#plan">Plan My Event</a>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section class="page" id="page-services" data-title="Our Services">
+      <div class="card services-card">
+        <h1 tabindex="-1">OUR SERVICES INCLUDE:</h1>
+        <ul class="tags" id="tags"></ul>
+        <p class="services-note">Pick an event to start planning it, or <a href="#plan">tell us what you have in mind</a>. Need a vendor on its own? See <a href="#vendors">Our Vendors</a>.</p>
+      </div>
+    </section>
+
+    <!-- BLOGS -->
+    <section class="page" id="page-blogs" data-title="Our Blogs">
+      <div class="card">
+        <h1 tabindex="-1">Our Blogs</h1>
+        <p>Practical advice from our planning desk. Choose a topic or read them all.</p>
+        <div class="filters" id="filters" role="group" aria-label="Filter posts by topic"></div>
+        <div class="blog-list" id="blogList"></div>
+      </div>
+    </section>
+
+    <!-- VENDORS -->
+    <section class="page" id="page-vendors" data-title="Our Vendors">
+      <div class="card">
+        <h1 tabindex="-1">Our Vendors</h1>
+        <p>Every event we plan is backed by trusted partners. You can book any of these services as part of your event plan.</p>
+        <ul class="vendor-grid" id="vendorGrid"></ul>
+        <div class="vendor-cta">
+          <a class="btn" href="#plan">Plan an event with vendors</a>
+          <p>Offer one of these services?</p>
+          <a class="btn ghost" href="#contact" data-subject="Vendor application">Apply to be a vendor</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAN MY EVENT -->
+    <section class="page" id="page-plan" data-title="Plan My Event" data-dark>
+      <div class="dark-panel">
+        <h1 tabindex="-1">Plan My Event <span class="script">Let's make it a party!</span></h1>
+        <p class="hint">Tell us about your event, choose your services, add anything extra, then send it to us on WhatsApp or Gmail.</p>
+
+        <ol class="steps" aria-label="Progress">
+          <li id="sl1" aria-current="step">1. Event details</li>
+          <li id="sl2">2. Services</li>
+          <li id="sl3">3. Extras</li>
+          <li id="sl4">4. Review and send</li>
+        </ol>
+
+        <form id="planForm" novalidate>
+          <div id="step1">
+            <div class="fields">
+              <div class="field"><label for="firstName">First name:</label><input id="firstName" name="First name" autocomplete="given-name" required></div>
+              <div class="field"><label for="lastName">Last name:</label><input id="lastName" name="Last name" autocomplete="family-name" required></div>
+              <div class="field"><label for="email">E-mail address:</label><input id="email" name="E-mail" type="email" autocomplete="email" required></div>
+              <div class="field"><label for="phone">Phone number:</label><input id="phone" name="Phone" type="tel" autocomplete="tel" required></div>
+              <div class="field"><label for="eventType">Event:</label><input id="eventType" name="Event" list="eventList" required></div>
+              <div class="field"><label for="location">Event location:</label><input id="location" name="Location" required></div>
+              <div class="field third"><label for="date">Date of event:</label><input id="date" name="Date" type="date" required></div>
+              <div class="field third"><label for="guests">Number of expected guests:</label><input id="guests" name="Guests" type="number" min="1" inputmode="numeric" required></div>
+              <div class="field third"><label for="budget">Budget:</label><input id="budget" name="Budget" placeholder="e.g. ₦2,000,000" required></div>
+              <div class="field"><label for="theme">Theme of party:</label><input id="theme" name="Theme"></div>
+              <div class="field"><label for="reference">Reference information (If any):</label><input id="reference" name="Reference"></div>
+              <div class="field">
+                <label for="venueStatus">Do you have a venue?</label>
+                <select id="venueStatus" name="Venue">
+                  <option>Yes, it is booked</option>
+                  <option>I have one in mind</option>
+                  <option>No, I need help finding one</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="contactPref">Best way to reach you:</label>
+                <select id="contactPref" name="Preferred contact">
+                  <option>WhatsApp</option>
+                  <option>Phone call</option>
+                  <option>E-mail</option>
+                </select>
+              </div>
+            </div>
+            <datalist id="eventList"></datalist>
+            <p class="error" id="err1" role="alert"></p>
+            <div class="actions"><button type="button" class="btn light" id="to2">Next: choose services</button></div>
+          </div>
+
+          <div id="step2" hidden>
+            <p class="hint" style="margin-top:0">Tick the services you require for your event.</p>
+            <div class="checks">
+              <fieldset><legend>Food:</legend><div id="foodChecks"></div></fieldset>
+              <fieldset><legend>Drinks:</legend><div id="drinkChecks"></div></fieldset>
+              <fieldset><legend>Vendor services:</legend><div id="vendorChecks"></div></fieldset>
+            </div>
+            <div class="actions">
+              <button type="button" class="btn light" id="back1">Back</button>
+              <button type="button" class="btn light" id="to3">Next: add extras</button>
+            </div>
+          </div>
+
+          <div id="step3" hidden>
+            <p class="hint" style="margin-top:0">Want to add something? Tick any extras below, or type your own requests. You can come back to this step before you send.</p>
+            <fieldset><legend>Popular extras:</legend><div class="checks" id="extraChecks"></div></fieldset>
+
+            <div class="field full" style="margin-top:26px">
+              <label for="customInput">Add your own request:</label>
+              <div class="inline">
+                <input id="customInput" placeholder="e.g. a live saxophonist during dinner" maxlength="120">
+                <button type="button" class="btn light" id="addCustom">Add</button>
+              </div>
+            </div>
+            <ul class="chips" id="customChips" aria-label="Your own requests"></ul>
+
+            <div class="field full" style="margin-top:22px">
+              <label for="notes">Anything else we should know?</label>
+              <textarea id="notes" name="Notes" placeholder="Dietary needs, cultural traditions, special guests, timings..."></textarea>
+            </div>
+            <div class="actions">
+              <button type="button" class="btn light" id="back2">Back</button>
+              <button type="submit" class="btn light">Review request</button>
+            </div>
+          </div>
+        </form>
+
+        <div id="step4" hidden>
+          <p class="hint" style="margin-top:0">Check your request below, then send it to us. Nothing is sent until you tap one of the buttons.</p>
+          <div class="summary"><dl id="summaryList"></dl></div>
+          <p class="send-note">Choose how to send it. The message is filled in for you.</p>
+          <div class="actions" style="margin-top:0">
+            <a class="btn wa" id="sendWa" href="#" target="_blank" rel="noopener">Send on WhatsApp</a>
+            <a class="btn light" id="sendGmail" href="#" target="_blank" rel="noopener">Send with Gmail</a>
+            <button type="button" class="btn ghost" id="copyPlan">Copy request</button>
+          </div>
+          <p class="status" id="copyStatus" role="status"></p>
+          <div class="actions" style="margin-top:8px">
+            <button type="button" class="btn ghost" id="addMore">Add something else</button>
+            <button type="button" class="btn ghost" id="editAll">Edit details</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="page" id="page-contact" data-title="Contact Us" data-dark>
+      <div class="dark-panel">
+        <h1 tabindex="-1">Contact Us</h1>
+        <p class="hint">Questions, sponsorship ideas or vendor applications are all welcome.</p>
+
+        <div class="contact-grid">
+          <div><h2>WhatsApp and calls</h2>
+            <p><a id="phone1" href="#"></a></p>
+            <p><a id="phone2" href="#"></a></p>
+            <span class="sub">Tap a number to call.</span>
+          </div>
+          <div><h2>E-mail</h2>
+            <p><a id="mailLink" href="#"></a></p>
+            <span class="sub" id="contactNote"></span>
+          </div>
+        </div>
+
+        <h2>Send us a message</h2>
+        <form id="contactForm" novalidate>
+          <div class="fields">
+            <div class="field"><label for="cName">Your name:</label><input id="cName" autocomplete="name" required></div>
+            <div class="field"><label for="cPhone">Phone number (optional):</label><input id="cPhone" type="tel" autocomplete="tel"></div>
+            <div class="field"><label for="cEmail">E-mail address:</label><input id="cEmail" type="email" autocomplete="email" required></div>
+            <div class="field">
+              <label for="cSubject">What is this about?</label>
+              <select id="cSubject">
+                <option>General enquiry</option>
+                <option>Vendor application</option>
+                <option>Sponsorship</option>
+                <option>Feedback</option>
+              </select>
+            </div>
+            <div class="field full"><label for="cMessage">Message:</label><textarea id="cMessage" required></textarea></div>
+          </div>
+          <p class="error" id="err2" role="alert"></p>
+          <div class="actions" style="margin-top:8px">
+            <a class="btn wa" id="cWa" href="#" target="_blank" rel="noopener">Send on WhatsApp</a>
+            <a class="btn light" id="cGmail" href="#" target="_blank" rel="noopener">Send with Gmail</a>
+          </div>
+        </form>
+
+        <h2>Common questions</h2>
+        <div class="faq" id="faq"></div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <span class="script">You dream it, we theme it</span>
+  <div class="foot-contact">
+    <a id="fPhone1" href="#"></a>
+    <a id="fPhone2" href="#"></a>
+    <a id="fMail" href="#"></a>
+  </div>
+  &copy; <span id="year"></span> OMIA Events
+</footer>
+
+<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Chat with OMIA Events on WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#06260f" d="M12 2.5a9.5 9.5 0 0 0-8.1 14.4L2.7 21.3l4.5-1.2A9.5 9.5 0 1 0 12 2.5z"/><path fill="#25d366" d="M9.2 7.4c-.4 0-.8.3-1 .9-.3 1 .2 2.4 1.3 3.8 1.2 1.400 2.700 2.200 3.900 2.200.6 0 1.100-.4 1.300-1 .1-.3 0-.5-.2-.6l-1.400-.7c-.2-.1-.4 0-.5.1l-.5.6c-.1.1-.3.2-.5.1-.8-.4-1.500-1-2-1.900-.1-.2-.1-.3 0-.5l.4-.5c.1-.2.1-.3 0-.5l-.6-1.400c-.1-.2-.3-.4-.7-.4z"/></svg>
+  <span>Chat on WhatsApp</span>
+</a>
+
+<script>
+  /* ====== Edit these to update the business details ====== */
+  var CONTACT = {
+    email: "omiaeventsandcatering10@gmail.com",
+    phones: [
+      { display: "0805 543 7913", tel: "+2348055437913" },
+      { display: "0903 765 6619", tel: "+2349037656619" }
+    ],
+    whatsapp: "2348055437913",   /* international format, no + or spaces */
+    note: "We reply to every message as quickly as we can."
+  };
+
+  var EVENTS = [
+    "Weddings", "Engagement parties", "Anniversaries", "Corporate events", "Birthday parties",
+    "Conference meetings", "Theme parties", "Burial services", "School events",
+    "Naming ceremonies", "Retirement services", "Gender reveals",
+    "Baby showers", "Bridal showers", "Graduation parties", "Product launches",
+    "Award ceremonies", "Housewarmings", "Family reunions", "Fundraisers and galas",
+    "Church and community programmes"
+  ];
+
+  var FOOD = [
+    "Nigerian dishes", "Continental dishes", "Oriental dishes", "Desserts", "Finger foods", "Other dishes",
+    "Small chops", "Jollof, fried and coconut rice", "Soups and swallows (egusi, efo riro, ogbono)",
+    "Grilled meat and fish (suya, asun, barbecue)", "Seafood", "Pasta and salads",
+    "Pastries and snacks", "Live cooking stations", "Vegetarian and vegan dishes"
+  ];
+
+  var DRINKS = [
+    "Non-alcoholic drinks", "Alcoholic drinks", "Soft drinks and bottled water", "Fresh juices and smoothies",
+    "Zobo, kunu and other local drinks", "Chapman", "Mocktails", "Cocktails", "Wine and champagne",
+    "Beer and spirits", "Tea and coffee bar", "Bartending service"
+  ];
+
+  var VENDORS = [
+    ["Catering and small chops", "Full buffet service, plated meals, small chops and live cooking stations."],
+    ["Decor and florals", "Stage design, table styling, balloon work, backdrops and fresh arrangements."],
+    ["Photography and video", "Event photographers, videographers, drone shots and same-day highlights."],
+    ["Sound, lighting and DJs", "PA systems, DJs, stage lighting and effects for the whole programme."],
+    ["MCs, bands and entertainers", "Hosts, live bands, cultural dancers, comedians and children's entertainers."],
+    ["Venues and rentals", "Halls, gardens, tents, chairs, tables, linen and cutlery."],
+    ["Cakes and desserts", "Custom cakes, dessert tables, cupcakes and pastry boxes."],
+    ["Makeup and styling", "Makeup artists, hair stylists, gele tying and fashion support."],
+    ["Ushers and security", "Trained ushers, guest registration, crowd control and event security."],
+    ["Photo booth and souvenirs", "Photo booths, branded souvenirs, gift packs and giveaways."],
+    ["Invitations and printing", "Invitation cards, programmes, banners, signage and branded materials."],
+    ["Transport and logistics", "Guest shuttles, vendor deliveries, set-up crews and clean-up teams."]
+  ];
+
+  var EXTRAS = [
+    "Custom event cake", "Souvenirs and giveaways", "Photo booth", "Red carpet and backdrop banner",
+    "Event hostesses", "Guest transport", "Accommodation for guests", "Printed programme and invitations",
+    "Live streaming for remote guests", "Cultural dancers and drummers", "Kids' corner and entertainment",
+    "Backup power and generator", "Cold sparklers and fireworks", "Cleaning and waste removal",
+    "Day-of event coordinator"
+  ];
+
+  var FAQS = [
+    ["How early should I contact you?", "As early as you can. Large events such as weddings and conferences benefit from several months, but send us your date and we will tell you what is possible."],
+    ["What happens after I send my event request?", "We read your details, then reply through WhatsApp, a phone call or e-mail (your choice) with questions or next steps."],
+    ["Can I book only some services?", "Yes. Tick only what you need in the plan form, such as decor only or catering only, and add any extras you want."],
+    ["Can I change my plan after sending it?", "Yes. Message us on WhatsApp with what you would like to change and we will update your plan."],
+    ["I am a vendor. How do I join?", "Choose \"Vendor application\" in the message form above and tell us what you offer."]
+  ];
+
+  /* Blog posts. A string is a paragraph; an array is a bullet list. */
+  var POSTS = [
+    {
+      cat: "Planning", title: "Set an event budget you can actually keep",
+      excerpt: "Start with the guest list, not the venue. Most overspending traces back to a number that was never fixed.",
+      body: [
+        "Fix your guest count first, because food, drinks, seating and rentals all scale with it. Every extra twenty guests changes the size of the venue, the number of tables and the amount of food, so a vague guest list means a vague budget.",
+        "Next, split your money into fixed costs (venue, decor, entertainment, photography) and per-guest costs (food, drinks, souvenirs). A common starting point is:",
+        ["Food and drinks: around 40 percent", "Venue and rentals: 20 to 25 percent", "Decor and flowers: 10 to 15 percent", "Entertainment, photo and video: 10 to 15 percent", "Backup fund: 10 percent"],
+        "Adjust the split to what matters most to you. A couple who loves food may spend more on catering and less on decor. Whatever you choose, write it down before you speak to vendors, so every quote is measured against a number.",
+        "Keep the backup fund for late changes such as extra guests, weather plans or last-minute rentals. If it goes unspent, it becomes a bonus instead of a problem."
+      ]
+    },
+    {
+      cat: "Decor and themes", title: "Five questions to ask before choosing a theme",
+      excerpt: "A good theme is a decision filter. If it can't help you say no to something, it isn't finished yet.",
+      body: [
+        "A theme is more than a colour. It is a set of choices that tells your decorator, caterer, MC and guests the same story. Before you fall in love with a Pinterest board, answer these:",
+        ["Who is the guest of honour, and what do they love?", "What should guests still remember a week later?", "Which colours are already in the venue, such as walls, floors and curtains?", "What can we say no to because of this theme?", "Which part of the theme will show up best in photos?"],
+        "Once you have your answers, choose two main colours and one accent. Limiting the palette makes everything easier: invitations, table linen, flowers, uniforms for ushers and even the cake can follow it.",
+        "Share your theme with every vendor early. A decorator, a baker and a makeup artist who all know the palette will make your event look planned rather than pieced together."
+      ]
+    },
+    {
+      cat: "Food and drinks", title: "Building a menu: jollof, small chops and everything between",
+      excerpt: "Mix a few crowd-pleasers with one or two signature dishes, and plan for dietary needs from the start.",
+      body: [
+        "Start with what your guests will actually eat. A main spread of rice dishes, a protein and a soup-and-swallow option suits most Nigerian celebrations, and continental or oriental dishes can sit beside them for guests who want something different.",
+        "Add one or two dishes that mean something to the celebrant. A grandmother's recipe or a favourite childhood meal gives the menu a story, and guests remember it.",
+        "Finger foods and small chops keep guests happy while photos and speeches run long. Serve them during the cocktail hour or as the first thing guests see when they sit down.",
+        "Ask about allergies and dietary needs on your invitation or RSVP, and label dishes clearly on the buffet table. Vegetarian and vegan dishes, halal options and nut-free items should be planned from the start, not added at the last minute.",
+        "Finally, think about service style. A buffet moves quickly for large crowds, plated service feels formal, and live cooking stations make a talking point. Your caterer can advise on what works for your venue and guest count."
+      ]
+    },
+    {
+      cat: "Corporate", title: "A working timeline for corporate events",
+      excerpt: "Work backwards from the day. Sponsors, speakers and venue contracts all need the longest lead time.",
+      body: [
+        "Corporate events succeed on logistics. Whether it is a conference, a product launch or a staff celebration, work backwards from the event date and give the slowest decisions the most time.",
+        ["Twelve weeks out: confirm the goal, budget, date and venue.", "Eight weeks out: lock speakers, sponsors, hosts and key vendors.", "Six weeks out: open registration and send invitations.", "Four weeks out: finalise the programme, branding, signage and AV needs.", "Two weeks out: confirm numbers, seating and catering counts.", "One week out: do a full walkthrough with every vendor."],
+        "On the day, assign one person to each zone: registration, stage, catering and guest care. Write the run-of-show down to the minute, and share it with everyone who has a role.",
+        "Afterwards, send a thank-you message and a short feedback form while the event is fresh. Sponsors and attendees will remember the follow-up as much as the event itself."
+      ]
+    },
+    {
+      cat: "Weddings", title: "Planning a wedding in six months",
+      excerpt: "Six months is enough time if you decide the big things first and keep a simple month-by-month plan.",
+      body: [
+        "A six-month plan is realistic when you make the big decisions early. Here is a simple way to pace it:",
+        ["Month 1: set your budget, guest list and preferred dates, then book the venue.", "Month 2: choose your caterer, decorator and photographer, and pay the first deposits.", "Month 3: finalise outfits, the wedding party and your theme and colour palette.", "Month 4: send invitations, book the MC, entertainment and makeup artists, and plan the cake.", "Month 5: confirm the guest list, run a menu tasting and finalise the order of events.", "Month 6: do final fittings, a venue walkthrough and a last vendor confirmation call."],
+        "Traditional and white weddings often happen close together, so plan the two sets of outfits, venues and guest numbers separately. They may need different caterers, decor and timings.",
+        "In the last two weeks, hand day-of tasks to a coordinator or trusted friend so you can enjoy your own wedding instead of managing it."
+      ]
+    },
+    {
+      cat: "Planning", title: "Choosing a venue: what to check before paying a deposit",
+      excerpt: "A beautiful hall can still fail on parking, power or sound. Check these things before you commit.",
+      body: [
+        "Visit the venue at the same time of day as your event if you can, and bring someone who has not fallen in love with it yet. They will ask better questions.",
+        ["Capacity: does it fit your guest count with tables, a stage and a dance floor?", "Power: is there a generator or backup supply, and who pays for fuel?", "Parking and access: can guests, vendors and elderly relatives reach it easily?", "Sound rules: is there a curfew, or a limit on volume?", "Kitchen and storage: where will caterers prepare and store food?", "Restrooms and cooling: are there enough, and does the hall stay comfortable?", "Rules on decor: can you hang, nail or use candles?", "What is included: tables, chairs, linen and cleaning?"],
+        "Ask for everything in writing, including the deposit terms, what happens if you reschedule and the rules on outside vendors. A clear agreement now saves arguments later."
+      ]
+    },
+    {
+      cat: "Food and drinks", title: "Drinks planning: how much is enough?",
+      excerpt: "Running out of drinks is the quickest way to lose a party. A little arithmetic prevents it.",
+      body: [
+        "A common rule of thumb is two to three drinks per guest in the first two hours and about one drink per guest for each hour after that. Hot weather, a long programme and a dancing crowd all push the number up.",
+        "Always stock plenty of water and non-alcoholic choices, even at events where alcohol is served. Zobo, chapman, fresh juices and mocktails give guests who do not drink something special instead of an afterthought.",
+        "If you serve alcohol, think about a bartender or a limited menu of signature cocktails. It keeps queues short, controls cost and keeps your event comfortable for everyone.",
+        "Finally, plan ice and cold storage. Warm drinks ruin the mood faster than anything else, so ask your supplier how they will keep drinks cold from set-up until the last dance."
+      ]
+    },
+    {
+      cat: "Ceremonies", title: "Planning a dignified burial or celebration of life",
+      excerpt: "These events carry deep emotion and many traditions. Clear planning gives the family room to grieve.",
+      body: [
+        "When a family is grieving, planning needs to be calm, clear and respectful. Start by agreeing who speaks for the family, so vendors and guests get one set of answers.",
+        "Decide on the programme early: the service, the viewing or interment, the reception and any cultural rites. Confirm the venue, seating, sound and a printed order of service or tribute programme.",
+        "Plan hospitality for travelling relatives, including food, drinks, seating and transport, and think about guests who are elderly or need extra support.",
+        "Keep the budget honest. A meaningful celebration of life does not depend on spending the most, and a good planner will help you focus on what your family values.",
+        "Our team can handle logistics quietly in the background, from vendors to guest flow, so the family can concentrate on remembering their loved one."
+      ]
+    },
+    {
+      cat: "Ceremonies", title: "Naming ceremonies and baby showers: tradition with a little fun",
+      excerpt: "Welcoming a new baby is a joyful event. Keep the traditions and add a few details that make it personal.",
+      body: [
+        "A naming ceremony often combines prayers, family traditions and a celebration meal. Speak to the elders in your family about the rites expected, then build the programme around them.",
+        "For a baby shower, choose activities that include everyone: a guessing game, a wishes-for-baby card and a simple photo corner work well. Keep the programme short so the mother-to-be can enjoy herself.",
+        "Food should be easy to eat while chatting: small chops, finger foods, light pastries and a variety of drinks. Add a dessert table or cake in the baby's colours, or a gender reveal moment if you are planning one.",
+        "Finally, think about comfort. Make sure there is seating, shade, restrooms nearby and a quiet corner for the baby and parents."
+      ]
+    },
+    {
+      cat: "Planning", title: "Event-day checklist: what to confirm and what to carry",
+      excerpt: "The best events feel effortless because the small details were checked the day before.",
+      body: [
+        "Send each vendor a one-page schedule with arrival times, contact numbers and the venue address. Call them the day before to confirm.",
+        ["Run-of-show with exact times", "Vendor contact list and payment balances", "Guest list and seating plan", "Spare phone chargers, power banks and extension cables", "Safety pins, tape, scissors and a basic first-aid kit", "Printed programmes, name cards and signage", "Cash for tips and small emergencies", "Water, snacks and a meal for your own team"],
+        "Appoint one person to answer vendor questions so the celebrant is never interrupted. Check the sound system and lighting before guests arrive, and plan where things will be placed when the event ends.",
+        "After the event, collect rentals, settle balances and thank every vendor. People who feel appreciated are the first to help you again."
+      ]
+    },
+    {
+      cat: "Vendors", title: "Working with vendors: how to get great service",
+      excerpt: "Good vendors do their best work when the brief is clear and the payment terms are fair.",
+      body: [
+        "Give every vendor the same clear brief: date, venue, guest count, theme, schedule and budget. It helps them quote correctly and saves back-and-forth.",
+        "Ask for written quotes and a signed agreement that covers what is included, the payment schedule, cancellation terms and what happens if something goes wrong.",
+        "Look at real examples of their work, ask for references and, for caterers, ask for a tasting. A vendor who is confident in their work will be happy to show it.",
+        "Treat vendors as part of the team. Feed them on the day, give them a contact person, and tell them early if plans change. Respect goes a long way."
+      ]
+    },
+    {
+      cat: "Planning", title: "Planning around power, rain and traffic",
+      excerpt: "Three things can spoil a great plan: no electricity, a downpour or guests stuck in traffic. Prepare for all three.",
+      body: [
+        "Power: confirm whether your venue has a generator and who supplies fuel. Bring a backup for sound, lighting and cooking, and keep important devices charged.",
+        "Weather: if any part of your event is outdoors, book a tent or an indoor fallback, and decide by a set time whether to switch plans. Tell guests clearly where they should go.",
+        "Traffic: send guests a location pin, parking advice and an arrival time that is earlier than the real start. For large events, consider shuttles or a staggered arrival window.",
+        "Build extra time into your schedule for each of these, and you will be able to adapt without panic."
+      ]
+    },
+    {
+      cat: "Parties", title: "Birthday parties: six ideas beyond the usual",
+      excerpt: "A birthday does not need a hall and a DJ. Choose a format that fits the person being celebrated.",
+      body: [
+        "Think about the guest of honour first. Then try one of these formats:",
+        ["A garden brunch with a dessert table and live acoustic music", "A themed costume party with a photo booth and a best-dressed prize", "A rooftop dinner with lanterns and a curated playlist", "A game night with food stations and small prizes", "A surprise celebration with a slideshow of the year", "A family cook-out with grilled meat, music and old-school games"],
+        "Whatever you pick, put effort into the first and last ten minutes. A strong welcome and a memorable ending are what guests describe afterwards.",
+        "If you would like help turning one of these into a real plan, send us your idea through the event form and we will build it with you."
+      ]
+    }
+  ];
+
+  /* ====== Helpers ====== */
+  var $ = function (id) { return document.getElementById(id); };
+  var routes = ["home", "about", "services", "blogs", "vendors", "plan", "contact"];
+
+  function el(tag, attrs, children) {
+    var n = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === "text") n.textContent = attrs[k]; else n.setAttribute(k, attrs[k]);
+    });
+    (children || []).forEach(function (c) { n.appendChild(c); });
+    return n;
+  }
+  function waLink(text) { return "https://wa.me/" + CONTACT.whatsapp + "?text=" + encodeURIComponent(text); }
+  function gmailLink(subject, body) {
+    return "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(CONTACT.email) +
+      "&su=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  }
+
+  /* ====== Static content ====== */
+  var tags = $("tags"), dl = $("eventList");
+  EVENTS.forEach(function (s) {
+    tags.appendChild(el("li", {}, [el("a", { class: "tag", href: "#plan", "data-event": s }, [el("span", { text: s })])]));
+    dl.appendChild(el("option", { value: s }));
+  });
+
+  var vendorGrid = $("vendorGrid");
+  VENDORS.forEach(function (v) {
+    vendorGrid.appendChild(el("li", {}, [el("h2", { text: v[0] }), el("p", { text: v[1] })]));
+  });
+
+  function makeChecks(containerId, group, items) {
+    var box = $(containerId);
+    items.forEach(function (label) {
+      var input = el("input", { type: "checkbox", "data-group": group, value: label });
+      box.appendChild(el("label", { class: "check" }, [input, document.createTextNode(label)]));
+    });
+  }
+  makeChecks("foodChecks", "Food", FOOD);
+  makeChecks("drinkChecks", "Drinks", DRINKS);
+  makeChecks("vendorChecks", "Vendor services", VENDORS.map(function (v) { return v[0]; }));
+  makeChecks("extraChecks", "Extras", EXTRAS);
+
+  /* Blog */
+  var blogList = $("blogList"), filters = $("filters"), activeCat = "All";
+  function wordCount(p) { return p.body.reduce(function (n, b) { return n + (Array.isArray(b) ? b.join(" ") : b).split(/\s+/).length; }, 0); }
+  POSTS.forEach(function (p) {
+    var mins = Math.max(1, Math.round(wordCount(p) / 200));
+    var summary = el("summary", {}, [
+      el("p", { class: "meta", text: p.cat + " \u2022 " + mins + " min read" }),
+      el("h2", { text: p.title }),
+      el("p", { text: p.excerpt }),
+      el("span", { class: "more" })
+    ]);
+    var body = el("div", { class: "body" });
+    p.body.forEach(function (b) {
+      if (Array.isArray(b)) {
+        var ul = el("ul");
+        b.forEach(function (t) { ul.appendChild(el("li", { text: t })); });
+        body.appendChild(ul);
+      } else body.appendChild(el("p", { text: b }));
+    });
+    body.appendChild(el("div", { class: "cta" }, [el("a", { class: "btn", href: "#plan", text: "Plan my event with OMIA" })]));
+    blogList.appendChild(el("details", { class: "post", "data-cat": p.cat }, [summary, body]));
+  });
+  var cats = ["All"];
+  POSTS.forEach(function (p) { if (cats.indexOf(p.cat) === -1) cats.push(p.cat); });
+  cats.forEach(function (c) {
+    var b = el("button", { type: "button", "aria-pressed": c === "All" ? "true" : "false", text: c });
+    b.addEventListener("click", function () {
+      activeCat = c;
+      filters.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      blogList.querySelectorAll(".post").forEach(function (d) { d.hidden = !(c === "All" || d.dataset.cat === c); });
+    });
+    filters.appendChild(b);
+  });
+
+  /* FAQ */
+  FAQS.forEach(function (f) {
+    $("faq").appendChild(el("details", {}, [el("summary", { text: f[0] }), el("p", { text: f[1] })]));
+  });
+
+  /* Contact details everywhere */
+  function setPhone(id, p) { var a = $(id); a.textContent = p.display; a.href = "tel:" + p.tel; }
+  setPhone("phone1", CONTACT.phones[0]); setPhone("phone2", CONTACT.phones[1]);
+  setPhone("fPhone1", CONTACT.phones[0]); setPhone("fPhone2", CONTACT.phones[1]);
+  [$("mailLink"), $("fMail")].forEach(function (a) { a.textContent = CONTACT.email; a.href = "mailto:" + CONTACT.email; });
+  $("contactNote").textContent = CONTACT.note;
+  $("waFloat").href = waLink("Hello OMIA Events, I would like to ask about planning an event.");
+  $("year").textContent = new Date().getFullYear();
+
+  /* ====== Router ====== */
+  var pendingEvent = "", pendingSubject = "";
+  function route() {
+    var name = (location.hash || "#home").slice(1);
+    if (routes.indexOf(name) === -1) name = "home";
+    document.querySelectorAll("section.page").forEach(function (s) { s.classList.toggle("is-active", s.id === "page-" + name); });
+    document.querySelectorAll("nav.primary a").forEach(function (a) {
+      if (a.getAttribute("href") === "#" + name) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+    });
+    var page = $("page-" + name);
+    $("stage").classList.toggle("is-dark", page.hasAttribute("data-dark"));
+    document.title = page.dataset.title + " | OMIA Events";
+    window.scrollTo(0, 0);
+    var h = page.querySelector("h1");
+    if (h) h.focus({ preventScroll: true });
+
+    if (name === "plan" && pendingEvent) { $("eventType").value = pendingEvent; pendingEvent = ""; showStep(1); }
+    if (name === "contact" && pendingSubject) { $("cSubject").value = pendingSubject; pendingSubject = ""; }
+  }
+  window.addEventListener("hashchange", route);
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("a");
+    if (!a) return;
+    if (a.dataset.event) pendingEvent = a.dataset.event;
+    if (a.dataset.subject) pendingSubject = a.dataset.subject;
+  });
+
+  /* ====== Plan my event ====== */
+  var planForm = $("planForm"), currentStep = 1, customItems = [];
+  var dateInput = $("date");
+  dateInput.min = new Date().toISOString().slice(0, 10);
+
+  function showStep(n) {
+    currentStep = n;
+    ["step1", "step2", "step3", "step4"].forEach(function (id, i) { $(id).hidden = (i + 1) !== n; });
+    planForm.hidden = n === 4;
+    [1, 2, 3, 4].forEach(function (i) {
+      var li = $("sl" + i);
+      if (i === n) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current");
+    });
+    $("err1").textContent = "";
+    window.scrollTo(0, 0);
+  }
+
+  function validateStep1() {
+    var inputs = Array.prototype.slice.call($("step1").querySelectorAll("input[required]"));
+    var bad = inputs.filter(function (i) { return !i.value.trim() || !i.checkValidity(); });
+    if (bad.length) {
+      $("err1").textContent = "Please complete: " + bad.map(function (i) { return i.previousElementSibling.textContent.replace(":", ""); }).join(", ") + ".";
+      bad[0].focus();
+      return false;
+    }
+    return true;
+  }
+
+  $("to2").addEventListener("click", function () { if (validateStep1()) showStep(2); });
+  $("back1").addEventListener("click", function () { showStep(1); });
+  $("to3").addEventListener("click", function () { showStep(3); });
+  $("back2").addEventListener("click", function () { showStep(2); });
+  $("addMore").addEventListener("click", function () { showStep(3); });
+  $("editAll").addEventListener("click", function () { showStep(1); });
+
+  /* Custom requests */
+  function renderChips() {
+    var ul = $("customChips");
+    ul.textContent = "";
+    customItems.forEach(function (item, i) {
+      var rm = el("button", { type: "button", "aria-label": "Remove " + item, text: "\u00d7" });
+      rm.addEventListener("click", function () { customItems.splice(i, 1); renderChips(); });
+      ul.appendChild(el("li", {}, [el("span", { text: item }), rm]));
+    });
+  }
+  function addCustom() {
+    var v = $("customInput").value.trim();
+    if (!v) return;
+    customItems.push(v);
+    $("customInput").value = "";
+    renderChips();
+    $("customInput").focus();
+  }
+  $("addCustom").addEventListener("click", addCustom);
+  $("customInput").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); addCustom(); } });
+
+  function checked(group) {
+    return Array.prototype.slice.call(planForm.querySelectorAll('input[data-group="' + group + '"]:checked')).map(function (c) { return c.value; });
+  }
+  function prettyDate(v) {
+    try { return new Date(v + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }); }
+    catch (e) { return v; }
+  }
+
+  var planText = "";
+  planForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (currentStep === 1) { if (validateStep1()) showStep(2); return; }
+    if (currentStep === 2) { showStep(3); return; }
+
+    var rows = [];
+    $("step1").querySelectorAll("input, select").forEach(function (i) {
+      if (!i.value) return;
+      rows.push([i.name, i.type === "date" ? prettyDate(i.value) : i.value]);
+    });
+    [["Food", "Food"], ["Drinks", "Drinks"], ["Vendor services", "Vendor services"], ["Extras", "Extras"]].forEach(function (g) {
+      var list = checked(g[1]);
+      rows.push([g[0], list.length ? list.join(", ") : "None selected"]);
+    });
+    if (customItems.length) rows.push(["Own requests", customItems.join("; ")]);
+    var notes = $("notes").value.trim();
+    if (notes) rows.push(["Notes", notes]);
+
+    var list = $("summaryList");
+    list.textContent = "";
+    rows.forEach(function (r) { list.appendChild(el("dt", { text: r[0] })); list.appendChild(el("dd", { text: r[1] })); });
+
+    planText = "Hello OMIA Events, I would like to plan an event.\n\n" +
+      rows.map(function (r) { return r[0] + ": " + r[1]; }).join("\n") +
+      "\n\nPlease get back to me. Thank you.";
+    var evt = rows.filter(function (r) { return r[0] === "Event"; })[0];
+    var subject = "Event request: " + (evt ? evt[1] : "New event");
+    $("sendWa").href = waLink(planText);
+    $("sendGmail").href = gmailLink(subject, planText);
+    $("copyStatus").textContent = "";
+    showStep(4);
+  });
+
+  $("copyPlan").addEventListener("click", function () {
+    var done = function (ok) { $("copyStatus").textContent = ok ? "Copied. You can paste it anywhere." : "Copy did not work. Please use WhatsApp or Gmail instead."; };
+    try {
+      navigator.clipboard.writeText(planText).then(function () { done(true); }, function () { done(false); });
+    } catch (err) { done(false); }
+  });
+
+  /* ====== Contact form ====== */
+  function contactPayload() {
+    var name = $("cName"), email = $("cEmail"), msg = $("cMessage");
+    if (!name.value.trim() || !email.value.trim() || !email.checkValidity() || !msg.value.trim()) {
+      $("err2").textContent = "Please add your name, a valid e-mail address and a message.";
+      (!name.value.trim() ? name : (!email.value.trim() || !email.checkValidity()) ? email : msg).focus();
+      return null;
+    }
+    $("err2").textContent = "";
+    var text = "Hello OMIA Events,\n\n" + msg.value.trim() + "\n\nName: " + name.value.trim() +
+      "\nE-mail: " + email.value.trim() + ($("cPhone").value.trim() ? "\nPhone: " + $("cPhone").value.trim() : "") +
+      "\nTopic: " + $("cSubject").value;
+    return { text: text, subject: $("cSubject").value + " from " + name.value.trim() };
+  }
+  $("cWa").addEventListener("click", function (e) {
+    var p = contactPayload();
+    if (!p) { e.preventDefault(); return; }
+    this.href = waLink(p.text);
+  });
+  $("cGmail").addEventListener("click", function (e) {
+    var p = contactPayload();
+    if (!p) { e.preventDefault(); return; }
+    this.href = gmailLink(p.subject, p.text);
+  });
+  $("contactForm").addEventListener("submit", function (e) { e.preventDefault(); });
+
+  route();
+</script>
+</body>
+</html>
